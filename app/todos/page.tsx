@@ -24,6 +24,10 @@ export default function Todos() {
     }, [])
 
     async function fetchTodos() {
+        const user = (await supabase.auth.getUser()).data.user
+        if (user === null) {
+            return router.replace("/auth")
+        }
         const {data} = await supabase.from('todos').select('*')
         if (data) setTodos(data)
     }
@@ -44,6 +48,18 @@ export default function Todos() {
         if (data) {
             setTodos([...todos, data[0]])
             setNewTodo('')
+        }
+    }
+
+    async function deleteTodo(id: number) {
+        const { error } = await supabase
+            .from('todos')
+            .delete()
+            .eq('id', id)
+        if (error) {
+            console.log(error)
+        } else {
+            setTodos(todos.filter(todo => todo.id !== id))
         }
     }
 
@@ -87,6 +103,7 @@ export default function Todos() {
                         <span className={todo.is_complete ? 'line-through' : ''}>
                           {todo.task}
                         </span>
+                        <Button onClick={() => deleteTodo(todo.id)} className="ml-auto">Delete</Button>
                     </li>
                 ))}
             </ul>

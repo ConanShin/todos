@@ -1,6 +1,6 @@
 'use client'
 
-import {useState} from 'react'
+import {useEffect, useState} from 'react'
 import {useRouter} from 'next/navigation'
 import {Button} from "@/components/ui/button"
 import {Input} from "@/components/ui/input"
@@ -15,6 +15,19 @@ export default function Auth() {
     const [password, setPassword] = useState('')
     const router = useRouter()
     const supabase = createClient()
+
+    useEffect(() => {
+        (async () => {
+            try {
+                const user = (await supabase.auth.getUser()).data.user
+                if (user !== null) {
+                    return router.replace("/todos")
+                }
+            } catch (error) {
+                console.log(error)
+            }
+        })();
+    }, []);
 
     const handleSignUp = async () => {
         const isGithubPage = location.origin.endsWith('github.io')
