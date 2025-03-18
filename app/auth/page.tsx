@@ -17,11 +17,13 @@ export default function Auth() {
     const supabase = createClient()
 
     const handleSignUp = async () => {
+        const isGithubPage = location.origin.endsWith('github.io')
+        const basePath = isGithubPage ? location.origin + '/todos' : location.origin
         await supabase.auth.signUp({
             email,
             password,
             options: {
-                emailRedirectTo: `${location.origin}/auth/callback`,
+                emailRedirectTo: `${basePath}/auth/callback`,
             },
         })
     }
