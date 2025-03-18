@@ -38,6 +38,9 @@ export default function Todos() {
                 is_complete: false
             })
             .select()
+        if (error) {
+            console.log(error)
+        }
         if (data) {
             setTodos([...todos, data[0]])
             setNewTodo('')
