@@ -19,13 +19,16 @@ export default function Auth() {
     const handleSignUp = async () => {
         const isGithubPage = location.origin.endsWith('github.io')
         const basePath = isGithubPage ? location.origin + '/todos' : location.origin
-        await supabase.auth.signUp({
+        const {error} = await supabase.auth.signUp({
             email,
             password,
             options: {
                 emailRedirectTo: `${basePath}/auth/callback`,
             },
         })
+        if (error) {
+            toast.error(error.message)
+        }
     }
 
     const handleSignIn = async () => {
@@ -34,10 +37,10 @@ export default function Auth() {
             password,
         })
         if (error) {
-            if (error.message === 'Email not confirmed') {
-                toast.error('이메일 확인이 필요합니다. 이메일을 확인해주세요.');
+            if (error.code === 'email_not_confirmed') {
+                toast.error('이메일 확인이 필요합니다. 이메일을 확인해주세요.')
             } else {
-                toast.error(error.message);
+                toast.error(error.message)
             }
         } else {
             router.push('/todos')
